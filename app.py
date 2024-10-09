@@ -23,7 +23,7 @@ def home():
                 # Open the uploaded image directly from memory
                 image = Image.open(image_file)
                 
-                size_limit=2000
+                size_limit=500
                 # Check the dimensions before saving
                 if image.width > size_limit or image.height > size_limit:
                     return f"Image exceeds {size_limit}x{size_limit} size limit. Please re-upload a smaller image."
