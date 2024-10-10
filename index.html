@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Disease Detection</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous" />
+  <style>
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2em;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 0;
+      padding: 10px;
+      border: 2px solid #004d9f;
+      border-radius: 10px;
+    }
+
+    p {
+      font-size: 16px;
+      line-height: 1.5;
+      text-align: center;
+      padding: 10px;
+      border: 2px solid #004d9f;
+      border-radius: 10px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .img-fluid {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .btn-primary {
+      background-color: #7a0dc3;
+      transition: background-color 0.3s ease-in-out;
+      text-align: center;
+    }
+
+    .btn-primary:hover {
+      background-color: #b754db;
+    }
+
+    .btn-primary:active {
+      background-color: #004d9f;
+    }
+
+    #result {
+      text-align: center;
+      color: #fff;
+      padding: 2rem;
+      background-color: #004d9f;
+      border-radius: 10px;
+    }
+
+    .center {
+      border: 5px solid;
+      padding: 10px;
+      margin-top: 20px;
+    }
+
+    /* Custom Toggle Button Styles */
+    .toggle-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .toggle-btn {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      border: 2px solid #004d9f;
+      border-radius: 10px;
+      background-color: #f0f0f0;
+      color: #004d9f;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .toggle-btn.active {
+      background-color: #004d9f;
+      color: white;
+    }
+
+    .toggle-btn:hover {
+      background-color: #004d9f;
+      color: white;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container center">
+    <h1>Disease Detection using Machine Learning</h1>
+
+    <div class="toggle-container">
+      <!-- Side by Side custom toggle buttons -->
+      <button id="pneumonia-btn" class="toggle-btn active" onclick="toggleDisease('pneumonia')">
+        Pneumonia Detection
+      </button>
+
+      <button id="cataract-btn" class="toggle-btn" onclick="toggleDisease('cataract')">
+        Cataract Detection
+      </button>
+    </div>
+
+    <p id="description">
+      Pneumonia is a lung infection that can be caused by bacteria, viruses,
+      or fungi. It can be serious, especially in young children and older
+      adults. This website uses machine learning to detect pneumonia in x-ray
+      scans. To use the website, simply upload an x-ray scan, and the model
+      will predict whether you have pneumonia.
+    </p>
+
+    <form class="p-3" id="uploadForm">
+      <input class="form-control" type="file" name="imagefile" id="imagefile" onchange="previewImage()"
+        accept="image/*" />
+      <div id="preview" style="text-align: center" class="mt-3" ondragover="handleDragOver(event)"
+        ondrop="handleDrop(event)" onpaste="handlePaste(event)">
+        Drag and drop an image or paste an image here
+      </div>
+
+      <input class="btn btn-primary mt-3" style="text-align: center" type="button" value="Diagnose"
+        onclick="submitForm()" />
+      <input type="hidden" name="image" id="image" />
+      <input type="hidden" name="model" id="model" value="pneumonia" />
+    </form>
+
+    <div id="result" class="p-3" style="text-align: center; font-size: large"></div>
+
+    <script>
+      // Function to toggle between Pneumonia and Cataract descriptions
+      function toggleDisease(disease) {
+        const description = document.getElementById("description");
+        const pneumoniaBtn = document.getElementById("pneumonia-btn");
+        const cataractBtn = document.getElementById("cataract-btn");
+        const modelInput = document.getElementById("model");
+
+        // Set the hidden input to the selected model
+        modelInput.value = disease;
+
+        if (disease === "pneumonia") {
+          description.innerHTML =
+            "Pneumonia is a lung infection that can be caused by bacteria, viruses, or fungi. It can be serious, especially in young children and older adults. This website uses machine learning to detect pneumonia in x-ray scans. To use the website, simply upload an x-ray scan, and the model will predict whether you have pneumonia.";
+          pneumoniaBtn.classList.add("active");
+          cataractBtn.classList.remove("active");
+        } else if (disease === "cataract") {
+          description.innerHTML =
+            "Cataract is a clouding of the eye's natural lens, which can lead to vision loss. This website uses machine learning to detect cataract in eye scans. To use the website, simply upload an eye scan, and the model will predict whether you have cataract.";
+          cataractBtn.classList.add("active");
+          pneumoniaBtn.classList.remove("active");
+        }
+      }
+
+      // Preview the selected image
+      function previewImage() {
+        const file = document.getElementById("imagefile").files[0];
+        if (file && file.type.match("image.*")) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const preview = document.getElementById("preview");
+            const image = document.createElement("img");
+            image.src = e.target.result;
+            image.style.maxWidth = "100%";
+            image.style.height = "auto";
+            preview.innerHTML = "";
+            preview.appendChild(image);
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      // Handle drag and drop image
+      function handleDragOver(event) {
+        event.preventDefault();
+      }
+
+      function handleDrop(event) {
+        event.preventDefault();
+        const file = event.dataTransfer.files[0];
+        const fileInput = document.getElementById("imagefile");
+        fileInput.files = event.dataTransfer.files;
+        previewImage();
+      }
+
+      function handlePaste(event) {
+        const items = event.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+          const item = items[i];
+          if (item.type.indexOf("image") !== -1) {
+            const file = item.getAsFile();
+            const fileInput = document.getElementById("imagefile");
+            fileInput.files = [file];
+            previewImage();
+            break;
+          }
+        }
+      }
+
+      // Submit the form
+      function submitForm() {
+        const fileInput = document.getElementById("imagefile");
+        const file = fileInput.files[0];
+
+        const formData = new FormData();
+        formData.append("imagefile", file);
+
+        const selectedModel = document.getElementById("model").value;
+        formData.append("model", selectedModel); // Send the selected disease model to the backend
+
+        fetch("/", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.text())
+          .then((result) => {
+            if (result.includes("Image exceeds")) {
+              alert(result); // Show alert if image exceeds the size limit
+            } else {
+              document.getElementById("result").innerHTML = result; // Show result
+            }
+          });
+
+        fetch("/", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.text())
+          .then((result) => {
+            document.getElementById("result").innerHTML = result;
+          });
+      }
+    </script>
+  </div>
+</body>
+
+</html>
